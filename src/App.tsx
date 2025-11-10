@@ -136,8 +136,10 @@ function App() {
   const sortedData = [...filteredData].sort((a, b) => {
     if (!sortBy) return 0;
 
-    const isASelected = selectedRows.has(a.id) || doubleClickedRows.has(a.id);
-    const isBSelected = selectedRows.has(b.id) || doubleClickedRows.has(b.id);
+    const isASelected =
+      selectedRows.has(a.index) || doubleClickedRows.has(a.index);
+    const isBSelected =
+      selectedRows.has(b.index) || doubleClickedRows.has(b.index);
 
     if (sortBy === "selected") {
       return isBSelected ? 1 : isASelected ? -1 : 0;
@@ -163,18 +165,18 @@ function App() {
     }
   };
 
-  const toggleRowSelection = (id: string) => {
+  const toggleRowSelection = (index: string) => {
     const newSelected = new Set(selectedRows);
     const newDoubleClicked = new Set(doubleClickedRows);
 
-    if (newDoubleClicked.has(id)) {
-      newDoubleClicked.delete(id);
-      newSelected.delete(id);
-    } else if (newSelected.has(id)) {
-      newSelected.delete(id);
-      newDoubleClicked.add(id);
+    if (newDoubleClicked.has(index)) {
+      newDoubleClicked.delete(index);
+      newSelected.delete(index);
+    } else if (newSelected.has(index)) {
+      newSelected.delete(index);
+      newDoubleClicked.add(index);
     } else {
-      newSelected.add(id);
+      newSelected.add(index);
     }
 
     setSelectedRows(newSelected);
@@ -278,6 +280,7 @@ function App() {
                 setSortBy(sortBy === "unselected" ? "selected" : "unselected")
               }
             >
+              <TableHead className="text-center border-r">#</TableHead>
               <TableHead
                 className={cn("text-center", showBothColumns && "border-r!")}
               >
@@ -295,16 +298,21 @@ function App() {
           </TableHeader>
           <TableBody>
             {sortedData.length > 0 ? (
-              sortedData.map((item) => (
+              sortedData.map((item, index) => (
                 <TableRow
-                  key={item.id}
-                  onClick={() => toggleRowSelection(item.id)}
+                  key={index}
+                  onClick={() => toggleRowSelection(item.index)}
                   className={cn(
                     "cursor-pointer",
-                    selectedRows.has(item.id) && "bg-emerald-500 text-white",
-                    doubleClickedRows.has(item.id) && "bg-red-500 text-white"
+                    selectedRows.has(item.index) &&
+                      "bg-emerald-500 text-white hover:bg-emerald-600",
+                    doubleClickedRows.has(item.index) &&
+                      "bg-red-500 text-white hover:bg-red-600"
                   )}
                 >
+                  <TableCell className="text-center border-r">
+                    {index + 1}
+                  </TableCell>
                   <TableCell
                     className={cn(
                       "text-center",
